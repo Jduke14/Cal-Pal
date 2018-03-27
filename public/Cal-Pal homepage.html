@@ -1,0 +1,61 @@
+
+<DOCTYPE! HTML>
+    <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="description" content="Official attempt at using html for Cal-Pal project">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Cal-Pal</title>
+            <link rel="stylesheet" href="Cal-Pal style.css">
+            <script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script src="moment.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.print.css" rel="stylesheet">
+
+<script>
+  $(document).ready(function() {
+      // page is now ready, initialize the calendar...
+      $('#calendar').fullCalendar({
+          // put your options and callbacks here
+      })
+  });
+</script>
+        </head>
+        <body>
+                <h1>Cal-Pal</h1>
+                <nav>
+                    <ul class="topbar">
+                        <li><a class="top" href="Cal-Pal%20homepage.html">Home</a></li>
+                        <li><a class="top" href="manage%20account.html">Manage Account</a></li>
+                        <li><a class="top" href="settings.html">Settings</a></li>
+                        <li style="float: right"><a class="top" href="index.html">Logout</a></li>
+                    </ul>
+                </nav>
+            <nav class="Navigation">
+                <div class="column1">
+                <h4>Navigation</h4>
+                    <ul class="sidebar">
+                        <li><a href="Cal-Pal%20homepage.html">Home</a></li>
+                        <li><a href="appointment%20list.html">Appointment List</a></li>
+                        <li><a href="previous%20appointments.html">Previous Appointments</a></li>
+                        <li><a href="manage%20account.html">Manage Account</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                        <li><a href="About%20Cal-Pal.html">About Cal-Pal</a></li>
+                        <li><a href="help.html">Help</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="column2">
+                <h2>Appointment Calendar</h2>
+                <div id="calendar"></div>
+            </div>
+            <div class="column1">
+                <h2>Today's Schedule</h2>
+            </div>
+        </body>
+    </html>
