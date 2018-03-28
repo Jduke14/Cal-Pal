@@ -11,7 +11,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.print.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.print.css" media="print" rel="stylesheet">
 
 <script>
   $(document).ready(function() {
@@ -19,9 +19,43 @@
       // page is now ready, initialize the calendar...
 
       $('#calendar').fullCalendar({
-          // put your options and callbacks here
+        // put your options and callbacks here
+
+        defaultView: 'agendaWeek',
+
+        minTime: '07:00:00',
+        maxTime: '18:30:00',
+        height: 697,
+
+        header: {
+          center: 'title'
+        },
+
+        buttonIcons: {
+          prev: 'left-single-arrow',
+          next: 'right-single-arrow'
+        },
+
+        events:
+          function(start, end, timezone, callback) {
+                //$('body').append('<img id="calendar-spinner" src="{{ asset("images/loaders/loader10.gif") }}"></img>');
+                var url = '{{ path('calendarEvents') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        start: start.unix(),
+                        end: end.unix(),
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(events) {
+                      callback(events);
+                    }
+                })
+          }
       })
-  });
+  })
 </script> {% endblock %}
 
 {% block body %}
