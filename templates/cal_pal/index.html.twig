@@ -5,8 +5,9 @@
 {% block headblock %} 
 <script 
 	src="https://code.jquery.com/jquery-2.2.4.min.js"
-  	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-  	crossorigin="anonymous"></script>
+	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	crossorigin="anonymous">
+</script>
 <script src="{{ asset('js/moment.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
@@ -56,6 +57,24 @@
           }
       })
   })
+
+  $(document).ready(function() {
+      // page is now ready, initialize the calendar...
+
+      $('#calendar2').fullCalendar({
+        // put your options and callbacks here
+        defaultView: 'agendaDay',
+
+        minTime: '07:00:00',
+        maxTime: '18:30:00',
+        height:650,
+
+        header: {
+        center: 'title'
+        }
+
+      })
+    }) 
 </script> {% endblock %}
 
 {% block body %}
@@ -69,4 +88,16 @@
         <div id='calendar'></div>
             <p class="cal"></p>
         </div>
+{% endblock %}
+
+{% block div %}
+  <style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+ <div class="column1">
+    <div id='calendar2'></div>
+        <p class="cal"></p>
+  </div>
 {% endblock %}
