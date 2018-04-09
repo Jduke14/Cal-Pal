@@ -112,6 +112,13 @@
                     <li><a class="navbar" href="#Settings">Settings</a></li>
                     <li><a class="navbar" href="{{ path('about_cal_pal') }}">About Cal-Pal</a></li>
                     <li><a class="navbar" href="#Help">Help</a></li>
+                    <div class="search-container">
+                            <li><form action="{{ path('search_business_cal_pal') }}">
+                                <input type="text" placeholder="Search Business" name="search">
+                                <button type="top">Submit</button>
+                                </form>                             
+                            </li>
+                    </div>  
                     <li style="float: right"><a class="navbar" href="#Logout">Logout</a></li>
                 </ul>
             </header>
