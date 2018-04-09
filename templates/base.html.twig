@@ -3,89 +3,102 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Cal-Pal{% endblock %}</title>
-        {% block stylesheets %}
-            <style>
-html {
 
-}
+        <style>
+        html {
 
-header{
+        }
 
-}
+        header{
 
-.bar {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: darkslateblue;
-}
+        }
 
-li {
-    float: left;
-}
+        .bar {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: darkslateblue;
+        }
 
-li a.navbar {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
+        li {
+            float: left;
+        }
 
-body {
+        li a.navbar {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
 
-}
+        body {
 
-h1, h2 {
-    color: black;
-    text-align: center;
-    border-bottom:
-}
+        }
 
-p {
-    font-family: verdana;
-    font-size: 20px;
-    text-align: left;
-}
+        h1, h2 {
+            color: black;
+            text-align: center;
+            border-bottom:
+        }
 
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
+        p {
+            font-family: verdana;
+            font-size: 20px;
+            text-align: left;
+        }
 
-li a {
-    display: block;
-    color: black;
-    width: 120px;
-    text-decoration: none;
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
 
-}
+        li a {
+            display: block;
+            color: black;
+            width: 120px;
+            text-decoration: none;
 
-li a:hover {
-    background-color: gray;
-    color: white;
-}
+        }
 
-/* Create three equal columns that floats next to each other */
-.column1{
-    float: left;
-    width: 200px; 
-}
+        li a:hover {
+            background-color: gray;
+            color: white;
+        }
 
-/* Create three equal columns that floats next to each other */
-.column2{
-    float: left;
-    width: 70%;
-    background: lightblue;
-}
+        /* Create three equal columns that floats next to each other */
+        .column1{
+            float: left;
+            width: 80%;
+            background: lightblue;
+        }
 
-.cal{
-    text-align: center;
-}
-</style>{% endblock %}
-    {% block headblock %} {% endblock %}
+        .column2{
+            float: left;
+            width: 20%; 
+        }
+
+        .cal{
+            text-align: center;
+        }
+
+        #calendar2 {
+            padding-left: 5px;
+            padding-top: 19px;
+        }
+        #calendar2 .fc-toolbar .fc-left {
+            font-size: 14px;
+        }
+
+        #calendar2 .fc-toolbar .fc-right {
+            font-size: 14px;
+        }
+
+        </style>       
+        {% block stylesheets %}{% endblock %}
+        {% block headblock %} {% endblock %}
     </head>
     <body>
         <header>
@@ -102,25 +115,6 @@ li a:hover {
                     <li style="float: right"><a class="navbar" href="#Logout">Logout</a></li>
                 </ul>
             </header>
-            <nav class="Navigation">
-            <div class="column1">
-            <h4>Navigation</h4>
-            <ul class="nav">
-                <li><a href="{{ path('index_cal_pal') }}">Home</a></li>
-                <li><a href="{{ path('appt_list_cal_pal') }}">Appointment List</a></li>
-                <li><a href="{{ path('prev_appt_cal_pal') }}">Previous Appointments</a></li>
-                <li><a href="#Manage Account">Manage Account</a></li>
-                <li><a href="#Settings">Settings</a></li>
-                <li><a href="{{ path('about_cal_pal') }}">About Cal-Pal</a></li>
-                <li><a href="#Help">Help</a></li>
-            </ul>
-            </div>
-            </nav>
-        {% block body %}{% endblock %}
-         	<div class="column1">
-                <h2>Today's Schedule</h2>
-                {% block div %} {% endblock %}
-            </div>
-        {% block javascripts %}{% endblock %}
+        {% block body %} {% endblock %}
     </body>
 </html>

@@ -45,7 +45,6 @@ class EventController extends Controller
      */
     public function getCalendarEvents(Request $request) { 
 
-    //$logger = $this->get('logger');
     $events = array();
     $e = new \stdClass(); 
     $e->title = 'Event 1';
@@ -58,41 +57,6 @@ class EventController extends Controller
     $events[] = $e;
 
     return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); 
-
-    /*$model = $this->get('lds_call_sheet.model'); 
-
-        $starttimestamp = $request->query->get('start'); 
-        $startdate = new \DateTime("@$starttimestamp"); 
-        $startdate->setTimezone(new \DateTimeZone(date_default_timezone_get())); 
-        $logger->debug(__METHOD__ . ':  startdate = ' . $startdate->format('Y-m-d H:i:s')); 
-        
-        $endtimestamp = $request->query->get('end'); 
-        $enddate = new \DateTime("@$endtimestamp"); 
-        $enddate->setTimezone(new \DateTimeZone(date_default_timezone_get())); 
-        $logger->debug(__METHOD__ . ':  enddate = ' . $enddate->format('Y-m-d H:i:s')); 
-        
-    
-        $securitycontext = $this->get('security.context'); 
-        if ($securitycontext->isGranted('ROLE_VIEWALLDEALERCALLS')) { 
-                $repid = $request->query->has('repid') ? $request->query->get('repid') : 'all'; 
-                $logger->debug(__METHOD__ . ': retrieving dealer calls for repid ' . $repid); 
-                $calls = $repid == 'all' ? 
-                        $model->get_dealer_calls($startdate, $enddate) : 
-                        $model->get_dealer_calls($startdate, $enddate, $repid); 
-        } 
-        else { 
-                $repid = $securitycontext->getToken()->getUser()->getId(); 
-                $logger->debug(__METHOD__ . ': retrieving dealer calls for repid ' . $repid); 
-                $calls = $model->get_dealer_calls($startdate, $enddate, $repid); 
-        }                         
-    
-    $events = array(); 
-    foreach($calls as $c) { 
-                $logger->debug(__METHOD__ . ': $call (before calendarEventFromDealerCall) = '.print_r($c, true));             
-        $events[] = $this->calendarEventFromDealerCall($c); 
-    } 
-    $hello='hello'; 
-    return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); */
 	}
 
 }
