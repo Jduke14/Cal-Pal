@@ -6,6 +6,7 @@ use App\Entity\Event;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -20,6 +21,13 @@ class CalPalController extends Controller
         return $this->render('cal_pal/index.html.twig', [
             'controller_name' => 'CalPalController',
         ]);
+    }
+    /**
+     * @Route("/admin")
+     */
+    public function admin() 
+    {
+        return new Response('<html><body>Admin page!</body></html>');
     }
     /**
      * @Route("/apptlist", name="appt_list_cal_pal")

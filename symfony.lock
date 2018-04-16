@@ -294,7 +294,7 @@
         }
     },
     "symfony/security": {
-        "version": "v4.0.6"
+        "version": "v4.0.8"
     },
     "symfony/security-bundle": {
         "version": "3.3",
