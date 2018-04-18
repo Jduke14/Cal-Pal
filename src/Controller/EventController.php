@@ -11,20 +11,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class EventController extends Controller
 {
     /**
-     * @Route("/event", name="event")
+     * @Route("/addEvent", name="addEvent")
      */
-    public function index()
+    public function addEvent(Request $request)
     {
+        $newEvent = json_decode($request->getContent());
+        /*print_r('<pre>');
+        print_r($newEvent);
+        print_r('</pre>');*/
         $entityManager = $this->getDoctrine()->getManager();
 
         $event = new Event();
-        $event->setStartDate(new \DateTime('2018-03-23 12:00:00'));
-        $event->setEndDate(new \DateTime('2018-03-23 14:00:00'));
-        $event->setCustomerID(1);
-        $event->setProviderID(1);
-        $event->setServiceID(1);
-		$event->setCompanyID(1);
-		$event->setComments('It was great!');
+        $event->setStartDate(new \DateTime($newEvent->eventstart));
+        $event->setEndDate(new \DateTime($newEvent->eventend));
+        $event->setCustomerID($newEvent->customerid);
+        $event->setProviderID($newEvent->providerid);
+        $event->setServiceID($newEvent->serviceid);
+		$event->setCompanyID($newEvent->companyid);
+		$event->setComments($newEvent->comments);
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $entityManager->persist($event);
@@ -32,7 +36,17 @@ class EventController extends Controller
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
 
-        return new Response('Saved new product with id '.$event->getId());
+        $e = new \stdClass();
+        $e->id = 1;
+        $e->title = 'New event';
+        $e->start = $newEvent->eventstart;
+        $e->end = $newEvent->eventend;
+        $e->comments = $newEvent->comments;
+
+        $r = new \stdClass();
+        $r->status = 'ok';
+        $r->data = $e;
+        return new Response(json_encode($r), 201, array('Content-Type'=>'application/json'));
 
         /*return $this->render('event/index.html.twig', [
             'controller_name' => 'EventController',

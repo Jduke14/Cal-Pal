@@ -32,7 +32,7 @@
 
       // page is now ready, initialize the calendar...
 
-      $('#calendar').fullCalendar({
+      calendar = $('#calendar').fullCalendar({
         // put your options and callbacks here
 
         defaultView: 'agendaWeek',
@@ -74,14 +74,10 @@
       })
 
     function addDialog(date, allDay, jsEvent, view) {
-      /*alert(date.getMonth());
-      var d = date.getDate();
-      var m = date.getMonth()+1;
-      var y = date.getFullYear();
-*/
-    
       $('#eventDate').val(date.format('YYYY-MM-DD'));
-      
+      $('#startTime').val(date.format('HH:mm'));
+      $('#endTime').val(date.add(2, 'hours').format('HH:mm'));
+
       eventDialog.dialog('option', 'title', 'New Appointment');
       var buttons = {};
       buttons.Save = saveButtonFn;
@@ -91,7 +87,28 @@
     }
 
     function saveButtonFn() {
-      return true;
+      var startDate = $('#eventDate').val();
+      var eventStart = startDate + " " + $('#startTime').val(); + ":00";
+      var eventEnd = startDate + " " + $('#endTime').val() + ":00";
+      var url = '{{path('addEvent') }}';
+      $.ajax(url, {
+        type: 'POST',
+        timeout: 30*1000,
+        dataType: 'json', 
+        data: JSON.stringify({
+          eventstart: eventStart,
+          eventend: eventEnd,
+          companyid: 1,
+          customerid: 1,
+          providerid: 1, 
+          serviceid: 1, 
+          comments: $('#comments').val()
+        })
+      })
+      .done(function (response, textStatus, jqXHR) {
+        calendar.fullCalendar('renderEvent', response.data);
+        eventDialog.dialog('close');
+      })
     }
     function cancelButtonFn() {
       eventDialog.dialog('close');
@@ -149,7 +166,20 @@
 
 <div id="addEvent"> 
   <label for=eventDate> Start Date </label>
-  <input id="eventDate" name="eventDate" type="date"> </input>
+  <input id="eventDate" name="eventDate" type="date">
+  <br> </br>
+  <label for=startTime> Start Time </label>
+  <input id="startTime" name="startTime" type="time">
+  <br> </br>
+  <label for=provider> Provider </label>
+  <input id="provider" name="provider" type="provider"> 
+  <br> </br>
+  <label for=service> Service </label>
+  <input id="service" name="service" type="service"> 
+  <br> </br>
+  <label for=comments> Comments (optional) </label>
+  <input id="comments" name="comments" type="comments">
+  <input id="endTime" style="display:none"> 
 </div>
 
 
