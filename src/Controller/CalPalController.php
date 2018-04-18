@@ -23,11 +23,11 @@ class CalPalController extends Controller
         ]);
     }
     /**
-     * @Route("/admin")
+     * @Route("/manage", name="manage_cal_pal")
      */
-    public function admin() 
+    public function manage()
     {
-        return new Response('<html><body>Admin page!</body></html>');
+        return $this->render('cal_pal/manage.html.twig');
     }
     /**
      * @Route("/about", name="about_cal_pal")
@@ -35,6 +35,13 @@ class CalPalController extends Controller
     public function about()
     {
         return $this->render('cal_pal/about.html.twig');
+    }
+    /**
+     * @Route("/admin")
+     */
+    public function admin() 
+    {
+        return new Response('<html><body>Admin page!</body></html>');
     }
     /**
      * @Route("/eventhtml", name="event_form")
