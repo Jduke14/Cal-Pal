@@ -2,7 +2,128 @@
 
 {% block title %}Manage Account{% endblock %}
 
-{% block headblock %} {% endblock %}
+{% block headblock %}
+<script 
+	src="https://code.jquery.com/jquery-2.2.4.min.js"
+	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	crossorigin="anonymous">
+</script>
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+<script src="{{ asset('js/moment.js') }}"></script>
+<link href="https://code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
+
+
+<script>
+  	$(document).ready(function() {
+		var customerDialog, providerDialog, serviceDialog;
+		var providerDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		var customerDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		var serviceDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		customerDialog = $('#addCustomer').dialog(customerDialogOptions);
+		$('#addCustomerButton').click(addCustomerDialog);
+		providerDialog = $('#addProvider').dialog(providerDialogOptions);
+		$('#addProviderButton').click(addProviderDialog);
+		serviceDialog = $('#addService').dialog(serviceDialogOptions);
+		$('#addServiceButton').click(addServiceDialog);
+
+		function addCustomerDialog(view) {
+			customerDialog.dialog('option', 'title', 'New Customer');
+			var buttons = {};
+			buttons.Save = saveCustomerButtonFn;
+			buttons.Cancel = cancelButtonFn;
+			customerDialog.dialog('option', 'buttons', buttons);
+			customerDialog.dialog('open');
+		}
+
+		function saveCustomerButtonFn() {
+			var url = '{{path('addCustomer') }}';
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          firstname: $('#customerFirstName').val(),
+		          lastname: $('#customerLastName').val(),
+		          email: $('email').val(),
+		          phonenumber: $('#phoneNumber').val(),
+		          companyid: 1
+		        })
+      		})
+		}
+
+		function addProviderDialog(view) {
+			providerDialog.dialog('option', 'title', 'New Provider');
+			var buttons = {};
+			buttons.Save = saveProviderButtonFn;
+			buttons.Cancel = cancelButtonFn;
+			providerDialog.dialog('option', 'buttons', buttons);
+			providerDialog.dialog('open');
+		}
+
+		function saveProviderButtonFn() {
+			var url = '{{path('addProvider') }}';
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          firstname: $('#providerFirstName').val(),
+		          lastname: $('#providerLastName').val(),
+		          companyid: 1
+		        })
+      		})
+		}
+
+		function addServiceDialog(view) {
+			serviceDialog.dialog('option', 'title', 'New Service');
+			var buttons = {};
+			buttons.Save = saveServiceButtonFn;
+			buttons.Cancel = cancelButtonFn;
+			serviceDialog.dialog('option', 'buttons', buttons);
+			serviceDialog.dialog('open');
+		}
+
+		function saveServiceButtonFn() {
+			var url = '{{path('addService') }}';
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          type: $('#type').val(),
+		          duration: $('#duration').val(),
+		          companyid: 1
+		        })
+      		})
+		}
+
+		function cancelButtonFn() {
+			customerDialog.dialog('close');
+			providerDialog.dialog('close');
+			serviceDialog.dialog('close');
+		}
+
+	})
+</script>
+{% endblock %}
 
 {% block body %}
 <style>
@@ -14,4 +135,50 @@
   <h2>Manage Account</h2>
   	<p> This section will be able to display the customers, providers, and services as well as adding/deleting them.</p>
 </div>
+
+<div>
+	<button id="addCustomerButton"> Add Customer </button>
+	<button id="addProviderButton"> Add Provider </button>
+	<button id="addServiceButton"> Add Service </button>
+</div>
+<br>
+
+<div id="addCustomer">
+	<label for=customerFirstName> First Name </label>
+	<input id="customerFirstName" name="customerFirstName"> <br>
+	<label for=customerLastName> Last Name </label>
+	<input id="customerLastName" name="customerLastName"> <br>
+	<label for=email> Email Address </label>
+	<input id="email" name="email"> <br>
+	<label for=phoneNumber> Phone Number </label>
+	<input id="phoneNumber" name="phoneNumber">
+</div>
+
+<div id="addProvider">
+	<label for=providerFirstName> First Name </label>
+	<input id="providerFirstName" name="providerFirstName"> <br>
+	<label for=providerLastName> Last Name </label>
+	<input id="providerLastName" name="providerLastName"> <br>
+</div>
+
+<div id="addService">
+	<label for=type> Service Type </label>
+	<input id="type" name="type"> <br>
+	<label for=duration> Duration </label>
+	<input id="duration" name="duration"> <br>
+</div>
+
+<div>
+	<button id="listCustomers"> List Customers </button>
+	<button id="listProviders"> List Providers </button>
+	<button id="listServices"> List Services </button>
+</div>
+<br>
+
+<div>
+	<button id="deleteCustomers"> Delete Customers </button>
+	<button id="deleteProviders"> Delete Providers </button>
+	<button id="deleteServices"> Delete Services </button>
+</div>
+
 {% endblock %}

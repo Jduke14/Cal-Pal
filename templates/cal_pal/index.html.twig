@@ -28,7 +28,7 @@
       width: 450,
       modal: true
     };
-    eventDialog = $('#addEvent').dialog(eventDialogOptions);;
+    eventDialog = $('#addEvent').dialog(eventDialogOptions);
 
       // page is now ready, initialize the calendar...
 
@@ -151,9 +151,7 @@
                 })
           }
       })
-    })
-
-
+  })
 
 </script> 
 {% endblock %}
@@ -166,22 +164,17 @@
 
 <div id="addEvent"> 
   <label for=eventDate> Start Date </label>
-  <input id="eventDate" name="eventDate" type="date">
-  <br> </br>
+  <input id="eventDate" name="eventDate" type="date"> <br>
   <label for=startTime> Start Time </label>
-  <input id="startTime" name="startTime" type="time">
-  <br> </br>
+  <input id="startTime" name="startTime" type="time"> <br>
   <label for=provider> Provider </label>
-  <input id="provider" name="provider" type="provider"> 
-  <br> </br>
+  <input id="provider" name="provider" type="provider"> <br>
   <label for=service> Service </label>
-  <input id="service" name="service" type="service"> 
-  <br> </br>
+  <input id="service" name="service" type="service"> <br>
   <label for=comments> Comments (optional) </label>
   <input id="comments" name="comments" type="comments">
-  <input id="endTime" style="display:none"> 
+  <input id="endTime" style="display:none">
 </div>
-
 
  <div class="column1">
     <h2>Appointment Calendar</h2>
