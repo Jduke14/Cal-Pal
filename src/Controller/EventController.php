@@ -59,18 +59,30 @@ class EventController extends Controller
      */
     public function getCalendarEvents(Request $request) { 
 
-    $events = array();
-    $e = new \stdClass(); 
-    $e->title = 'Event 1';
-    $e->start = '2018-03-25 12:00:00';
-    $events[] = $e;
+        $events = array();
+        $e = new \stdClass(); 
+        $e->title = 'Event 1';
+        $e->start = '2018-03-25 12:00:00';
+        $events[] = $e;
 
-    $e = new \stdClass(); 
-    $e->title = 'Event 2';
-    $e->start = '2018-02-15 12:00:00';
-    $events[] = $e;
+        $e = new \stdClass(); 
+        $e->title = 'Event 2';
+        $e->start = '2018-02-15 12:00:00';
+        $events[] = $e;
 
-    return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); 
+        return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); 
 	}
+    /**
+     * @Route("/event/{id}", name="remove_event")
+     */
+    public function deleteEvent($id) {
+        $entityManager = $this->getDoctrine()->getManager();
+        $event = $entityManager->getRepository(Event::class)->find($id);
+        $eventComments = $event->getComments();
+        $entityManager->remove($event);
+        $entityManager->flush();
+        return new Response('Event Deleted: '.$eventComments);
+
+    }
 
 }

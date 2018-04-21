@@ -34,4 +34,21 @@ class ProviderController extends Controller
             'controller_name' => 'ProviderController',
         ]);*/
     }
+    /**
+     * @Route("/provider/{id}", name="provider_show")
+     */
+    public function showAction($id) 
+    {
+        $provider = $this->getDoctrine()
+            ->getRepository(Provider::class)
+            ->find($id);
+
+        if(!$provider) {
+            throw $this->createNotFoundException(
+                'No provider found for this id '.$id
+            );
+        }
+
+        return new Response('Check out this provider: '.$provider->getFirstName());
+    }
 }

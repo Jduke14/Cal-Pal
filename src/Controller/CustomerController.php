@@ -34,6 +34,9 @@ class CustomerController extends Controller
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
 
+        $r = new \stdClass();
+        $r->status = 'Success';
+        return new Response(json_encode($r), 201, array('Content-Type'=>'application/json'));
         /*return $this->render('customer/index.html.twig', [
             'controller_name' => 'CustomerController',
         ]);*/

@@ -39,12 +39,14 @@
 		};
 		customerDialog = $('#addCustomer').dialog(customerDialogOptions);
 		$('#addCustomerButton').click(addCustomerDialog);
+
 		providerDialog = $('#addProvider').dialog(providerDialogOptions);
 		$('#addProviderButton').click(addProviderDialog);
+
 		serviceDialog = $('#addService').dialog(serviceDialogOptions);
 		$('#addServiceButton').click(addServiceDialog);
 
-		function addCustomerDialog(view) {
+		function addCustomerDialog() {
 			customerDialog.dialog('option', 'title', 'New Customer');
 			var buttons = {};
 			buttons.Save = saveCustomerButtonFn;
@@ -62,14 +64,19 @@
 		        data: JSON.stringify({
 		          firstname: $('#customerFirstName').val(),
 		          lastname: $('#customerLastName').val(),
-		          email: $('email').val(),
+		          email: $('#email').val(),
 		          phonenumber: $('#phoneNumber').val(),
 		          companyid: 1
 		        })
       		})
+      		.done(function (response, textStatus, jqXHR) {
+		        //$('#customerMessage').val('Save Successful!');
+		        alert('Save successful!');
+		        customerDialog.dialog('close');
+      		})
 		}
 
-		function addProviderDialog(view) {
+		function addProviderDialog() {
 			providerDialog.dialog('option', 'title', 'New Provider');
 			var buttons = {};
 			buttons.Save = saveProviderButtonFn;
@@ -90,9 +97,12 @@
 		          companyid: 1
 		        })
       		})
+      		.done(function (response, textStatus, jqXHR) {
+		        eventDialog.dialog('close');
+      		})
 		}
 
-		function addServiceDialog(view) {
+		function addServiceDialog() {
 			serviceDialog.dialog('option', 'title', 'New Service');
 			var buttons = {};
 			buttons.Save = saveServiceButtonFn;
@@ -152,6 +162,7 @@
 	<input id="email" name="email"> <br>
 	<label for=phoneNumber> Phone Number </label>
 	<input id="phoneNumber" name="phoneNumber">
+	<div id="customerMessage"> </div>
 </div>
 
 <div id="addProvider">
