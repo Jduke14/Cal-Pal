@@ -31,8 +31,38 @@ class ServiceController extends Controller
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
 
-        /*return $this->render('service/index.html.twig', [
-            'controller_name' => 'ServiceController',
-        ]);*/
+        $r = new \stdClass();
+        $r->status = 'Success';
+        return new Response(json_encode($r), 201, array('Content-Type'=>'application/json'));
+    }
+
+    /**
+     * @Route("/searchServices", name="search_services")
+     */
+    public function searchServices(Request $request) {
+        $companyID = 1;
+        $pattern = $request->get('term');
+        $repository = $this->getDoctrine()->getRepository(Service::class);
+        $services = $repository->searchServices($pattern, $companyID);
+        $matchServices = array();
+        foreach($services as $s) {
+            $temp = new \stdClass();
+            $temp->id = $s['id'];
+            $temp->label = $s['type'];
+            $temp->duration = $s['duration'];
+            $matchServices[] = $temp;
+        }
+        return new Response(json_encode($matchServices), 200, array('Content-Type' => 'application/json'));
+    }
+
+    /**
+     * @Route("/deleteService/{id}", name="delete_service")
+     */
+    public function deleteService($id) {
+        $entityManager = $this->getDoctrine()->getManager();
+        $service = $entityManager->getRepository(Service::class)->find($id);
+        $entityManager->remove($service);
+        $entityManager->flush();
+        return new Response('Service Deleted: ');
     }
 }

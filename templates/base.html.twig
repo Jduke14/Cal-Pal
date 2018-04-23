@@ -106,9 +106,11 @@
                 <ul class="bar">
                     <li></li>
                     <li><a class="navbar" href="{{ path('index_cal_pal') }}">Home</a></li>
-                    <li><a class="navbar" href="{{ path('manage_cal_pal') }}">Manage Account</a></li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                         <li><a class="navbar" href="{{ path('manage_cal_pal') }}">Manage Account</a></li> 
+                     {% endif %}
                     <li><a class="navbar" href="{{ path('about_cal_pal') }}">About</a></li>
-                    <li style="float: right"><a class="navbar" href="#Logout">Logout</a></li>
+                    <li style="float: right"><a class="navbar" href="{{ path('login') }}">Logout</a></li>
                 </ul>
             </header>
         {% block body %} {% endblock %}

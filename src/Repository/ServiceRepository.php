@@ -19,6 +19,32 @@ class ServiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Service::class);
     }
 
+    public function getAllServicesByCompanyId($id): array {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT id, type, duration 
+            FROM service
+            WHERE company_id = ?';
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(1, $id);
+            $stmt->execute();
+            return $stmt->fetchAll();
+    }
+
+    public function searchServices($pattern = '*', $companyId): array {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT id, type, duration 
+            FROM service
+            WHERE company_id = ? 
+            and type like ?';
+            $stmt = $conn->prepare($sql);
+            $pattern = $pattern.'%';
+            $stmt->bindParam(1, $companyId);
+            $stmt->bindParam(2, $pattern);
+            $stmt->execute();
+            return $stmt->fetchAll();
+    }
 //    /**
 //     * @return Service[] Returns an array of Service objects
 //     */

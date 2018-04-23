@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# Removed {% extends 'base.html.twig' %} so that way you can't skip login section#}
 
 {% block title %}Login{% endblock %}
 
@@ -14,7 +14,7 @@
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="_password" />
-        
+
         {# This will redirect the user to the main calendar page after a successful login#}
         <input type="hidden" name="_target_path" value="/index" />
 

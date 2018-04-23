@@ -5,13 +5,15 @@ security:
             memory:
                 users:
                     admin:
-                        password: 1234
+                        password: $2y$12$yG8j7zZPSww6dKnsYPVTuOWdyNfbgg2Kke2YUo9kA1KHUrfyx7wDG
                         roles: 'ROLE_ADMIN'
                     customer:
-                        password: 1234
+                        password: $2y$12$iflkkYCoWj3VldhCRVIKlOYqRldcw2kMFg4.0/NpoECPLlnAsQPSK
                         roles: 'ROLE_USER'
     encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
+        Symfony\Component\Security\Core\User\User: 
+            algorithm: bcrypt
+            cost: 12
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -22,6 +24,13 @@ security:
               login_path: login
               check_path: login
             http_basic: ~
+        secured_area:
+            security: false
+            logout:
+                path: /logout
+                target: /login
+
+
 
             # activate different ways to authenticate
 
@@ -34,5 +43,5 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/manage, roles: ROLE_ADMIN }
         # - { path: ^/index, roles: ROLE_USER }

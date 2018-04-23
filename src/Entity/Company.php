@@ -22,7 +22,7 @@ class Company
     private $companyName;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=12)
      */
     private $companyPhoneNumber;
 
@@ -48,12 +48,12 @@ class Company
         return $this;
     }
 
-    public function getCompanyPhoneNumber(): ?int
+    public function getCompanyPhoneNumber(): ?string
     {
         return $this->companyPhoneNumber;
     }
 
-    public function setCompanyPhoneNumber(int $companyPhoneNumber): self
+    public function setCompanyPhoneNumber(string $companyPhoneNumber): self
     {
         $this->companyPhoneNumber = $companyPhoneNumber;
 

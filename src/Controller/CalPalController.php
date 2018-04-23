@@ -3,6 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\Customer;
+use App\Entity\Provider;
+use App\Entity\Service;
+use App\Entity\Company;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,5 +90,48 @@ class CalPalController extends Controller
         return $this->render('event/index.html.twig', array(
             'form' => $form->createView(),
         ));
+    }
+
+    /**
+     * @Route("/getCustomers", name="get_customers")
+     */
+    public function getCustomersByCompanyId(Request $request) {
+        $companyID = 1;
+        $repository = $this->getDoctrine()->getRepository(Customer::class);
+        $customers = $repository->getAllCustomersByCompanyId($companyID);
+
+        return new Response(json_encode($customers), 200, array('Content-Type'=>'application/json'));
+    }
+    /**
+     * @Route("/getProviders", name="get_providers")
+     */
+    public function getProvidersByCompanyId(Request $request) {
+        $companyID = 1;
+        $repository = $this->getDoctrine()->getRepository(Provider::class);
+        $providers = $repository->getAllProvidersByCompanyId($companyID);
+
+        return new Response(json_encode($providers), 200, array('Content-Type'=>'application/json'));
+    }
+
+    /**
+     * @Route("/getServices", name="get_services")
+     */
+    public function getServicesByCompanyId(Request $request) {
+        $companyID = 1;
+        $repository = $this->getDoctrine()->getRepository(Service::class);
+        $services = $repository->getAllServicesByCompanyId($companyID);
+
+        return new Response(json_encode($services), 200, array('Content-Type'=>'application/json'));
+    }
+
+    /**
+     * @Route("/getCompany", name="get_company")
+     */
+    public function getCompanyByCompanyId(Request $request) {
+        $companyID = 1;
+        $repository = $this->getDoctrine()->getRepository(Company::class);
+        $company = $repository->getCompanyByCompanyId($companyID);
+
+        return new Response(json_encode($company), 200, array('Content-Type'=>'application/json'));
     }
 }

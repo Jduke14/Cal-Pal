@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,9 +17,7 @@ class EventController extends Controller
     public function addEvent(Request $request)
     {
         $newEvent = json_decode($request->getContent());
-        /*print_r('<pre>');
-        print_r($newEvent);
-        print_r('</pre>');*/
+        
         $entityManager = $this->getDoctrine()->getManager();
 
         $event = new Event();
@@ -29,51 +28,78 @@ class EventController extends Controller
         $event->setServiceID($newEvent->serviceid);
 		$event->setCompanyID($newEvent->companyid);
 		$event->setComments($newEvent->comments);
-
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $entityManager->persist($event);
 
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
 
+        $repository = $this->getDoctrine()->getRepository(Event::class);
+        $latestEvent = $repository->getEventById($event->getId());
         $e = new \stdClass();
-        $e->id = 1;
-        $e->title = 'New event';
-        $e->start = $newEvent->eventstart;
-        $e->end = $newEvent->eventend;
-        $e->comments = $newEvent->comments;
+        $e->id = $event->getId();
+        $e->title = $latestEvent['first_name'] . ' ' . $latestEvent['last_name'];
+        $e->start = $latestEvent['start_date'];
+        $e->end = $latestEvent['end_date'];
+        $e->comments = $latestEvent['comments'];
 
         $r = new \stdClass();
-        $r->status = 'ok';
+        $r->status = 'success';
         $r->data = $e;
-        return new Response(json_encode($r), 201, array('Content-Type'=>'application/json'));
+        return new Response(json_encode($r), 200, array('Content-Type'=>'application/json'));
+    }
+    /**
+     * @Route("/displayevent/{id}", name="event_display")
+     */
+    public function showAction($id) {
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->find($id);
 
-        /*return $this->render('event/index.html.twig', [
-            'controller_name' => 'EventController',
-        ]);*/
+        if(!$event) {
+            throw $this->createNotFoundException(
+                'No provider found for this id '.$id
+            );
+        }
 
+        $e = new \stdClass();
+        $e->id = $event->getId();
+        $e->title = 'New event';
+        $e->start = $event->getStartDate();
+        $e->end = $event->getEndDate();
+        $e->comments = $event->getComments();
+
+        $r = new \stdClass();
+        $r->status = 'success';
+        $r->data = $e;
+        return new Response(json_encode($r), 200, array('Content-Type'=>'application/json'));
     }
 
     /**
      * @Route("/getCalendarEvents", name="calendarEvents")
      */
     public function getCalendarEvents(Request $request) { 
+        $repository = $this->getDoctrine()->getRepository(Event::class);
+        $events = $repository->findAllEventsByDate();
+        $calEvents = array();
+        foreach($events as $tempE) {
+            $e = new \stdClass(); 
+            $e->title = $tempE['first_name'] . ' ' . $tempE['last_name'];
+            $e->start = $tempE['start_date'];
+            $e->end = $tempE['end_date'];
+            $e->provider = $tempE['p_first_name'] . ' '. $tempE['p_last_name'];
+            $e->service = $tempE['type'];
+            $e->comments = $tempE['comments'];
+            $e->customerid = $tempE['customer_id'];
+            $e->providerid = $tempE['provider_id'];
+            $e->serviceid = $tempE['service_id'];
+            $calEvents[] = $e;
+        }
 
-        $events = array();
-        $e = new \stdClass(); 
-        $e->title = 'Event 1';
-        $e->start = '2018-03-25 12:00:00';
-        $events[] = $e;
-
-        $e = new \stdClass(); 
-        $e->title = 'Event 2';
-        $e->start = '2018-02-15 12:00:00';
-        $events[] = $e;
-
-        return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); 
+        return new Response(json_encode($calEvents), 200, array('Content-Type' => 'application/json')); 
 	}
     /**
-     * @Route("/event/{id}", name="remove_event")
+     * @Route("/deleteEvent/{id}", name="remove_event")
      */
     public function deleteEvent($id) {
         $entityManager = $this->getDoctrine()->getManager();
@@ -82,7 +108,6 @@ class EventController extends Controller
         $entityManager->remove($event);
         $entityManager->flush();
         return new Response('Event Deleted: '.$eventComments);
-
     }
 
 }

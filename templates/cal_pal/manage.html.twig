@@ -50,13 +50,16 @@
 			customerDialog.dialog('option', 'title', 'New Customer');
 			var buttons = {};
 			buttons.Save = saveCustomerButtonFn;
-			buttons.Cancel = cancelButtonFn;
+			buttons.Cancel = cancelCustomerButtonFn;
 			customerDialog.dialog('option', 'buttons', buttons);
 			customerDialog.dialog('open');
 		}
 
 		function saveCustomerButtonFn() {
 			var url = '{{path('addCustomer') }}';
+			var phoneNumber = $('#phoneNumber').val();
+			//Correctly formats the phone number and sets it as an integer
+			phoneNumber = phoneNumber.substring(1,4) + phoneNumber.substring(6,9) + phoneNumber.substring(12,16);
 			$.ajax(url, {
 		        type: 'POST',
 		        timeout: 30*1000,
@@ -65,7 +68,7 @@
 		          firstname: $('#customerFirstName').val(),
 		          lastname: $('#customerLastName').val(),
 		          email: $('#email').val(),
-		          phonenumber: $('#phoneNumber').val(),
+		          phonenumber: phoneNumber,
 		          companyid: 1
 		        })
       		})
@@ -76,11 +79,15 @@
       		})
 		}
 
+		function cancelCustomerButtonFn() {
+			customerDialog.dialog('close');
+		}
+
 		function addProviderDialog() {
 			providerDialog.dialog('option', 'title', 'New Provider');
 			var buttons = {};
 			buttons.Save = saveProviderButtonFn;
-			buttons.Cancel = cancelButtonFn;
+			buttons.Cancel = cancelProviderButtonFn;
 			providerDialog.dialog('option', 'buttons', buttons);
 			providerDialog.dialog('open');
 		}
@@ -98,15 +105,19 @@
 		        })
       		})
       		.done(function (response, textStatus, jqXHR) {
-		        eventDialog.dialog('close');
+		        providerDialog.dialog('close');
       		})
+		}
+		
+		function cancelProviderButtonFn() {
+			providerDialog.dialog('close');
 		}
 
 		function addServiceDialog() {
 			serviceDialog.dialog('option', 'title', 'New Service');
 			var buttons = {};
 			buttons.Save = saveServiceButtonFn;
-			buttons.Cancel = cancelButtonFn;
+			buttons.Cancel = cancelServiceButtonFn;
 			serviceDialog.dialog('option', 'buttons', buttons);
 			serviceDialog.dialog('open');
 		}
@@ -123,13 +134,125 @@
 		          companyid: 1
 		        })
       		})
+      		.done(function (response, textStatus, jqXHR) {
+		        serviceDialog.dialog('close');
+      		})
 		}
 
-		function cancelButtonFn() {
-			customerDialog.dialog('close');
-			providerDialog.dialog('close');
+		function cancelServiceButtonFn() {
 			serviceDialog.dialog('close');
 		}
+
+		document.getElementById('phoneNumber').addEventListener('keyup',function(evt){
+	        var phoneNumber = document.getElementById('phoneNumber');
+	        var charCode = (evt.which) ? evt.which : evt.keyCode;
+	        phoneNumber.value = phoneFormat(phoneNumber.value);
+		});
+
+		function phoneFormat(input) {
+			//Strip all characters excluding digits
+			input = input.replace(/\D/g, '');
+			//Trim remaining input to 10 chars, to preserve phone number format
+			input = input.substring(0,10);
+			//Formats the phone number correctly as you type, does not allow more than 10 numbers
+			var size = input.length;
+			if(size == 0) {
+				input = input;
+			} else if (size < 4) {
+				input = '(' + input;
+			} else if (size < 7) {
+				input = '(' + input.substring(0,3) + ') ' + input.substring(3,6);
+			} else {
+				input = '(' + input.substring(0,3) + ') ' + input.substring(3,6) + ' - ' + input.substring(6,10);
+			}
+			return input;
+		}
+
+		$('#displaySelection').change(function() {
+			if($('#displaySelection').val() == "Customers") {
+				$('#addCustomerButton').show();
+				$('#addProviderButton').hide();
+				$('#addServiceButton').hide();
+				var url = '{{ path('get_customers') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(customers) {
+                    	var htmlString = '<table> <th> </th> <th> First Name </th> <th> Last Name </th> <th> Email </th> <th> Phone Number </th>';
+                    	var phoneNumber;
+                    	for( var i = 0; i < customers.length; i++) {
+                    		phoneNumber = '(' + customers[i].phone_number.substring(0, 3) + ')' + ' ' + customers[i].phone_number.substring(3, 6) + 
+                    		' - ' + customers[i].phone_number.substring(6, 10);
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteCustomer/' + customers[i].id + '">' +
+                    			'<img src = "something"> </a> </td> ' +
+                    			'<td> ' + customers[i].first_name + '</td>' + 
+                    			'<td>' + customers[i].last_name + '</td>' +
+                    			'<td>' + customers[i].email + '</td>' + 
+                    			'<td>' + phoneNumber + '</td> </tr>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			} else if ($('#displaySelection').val() == "Providers") {
+				$('#addCustomerButton').hide();
+				$('#addProviderButton').show();
+				$('#addServiceButton').hide();
+				var url = '{{ path('get_providers') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(providers) {
+                    	var htmlString = '<table> <th> </th> <th> </th> <th> First Name </th> <th> Last Name </th>';
+                    	for( var i = 0; i < providers.length; i++) {
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteProvider/' + providers[i].id + '">' +
+                    			'<img src = "something"> </a> </td> ' +
+                    			'<td> <a href = "/editProvider/' + providers[i].id + '">' +
+                    			'<img src = "something"> </a> </td>' +
+                    			'<td> ' + providers[i].first_name + '</td>' + 
+                    			'<td>' + providers[i].last_name + '</td>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			} else if ($('#displaySelection').val() == "Services") {
+				$('#addCustomerButton').hide();
+				$('#addProviderButton').hide();
+				$('#addServiceButton').show();
+				var url = '{{ path('get_services') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(services) {
+                    	var htmlString = '<table> <th> </th> <th> Type </th> <th> Duration </th>';
+                    	for( var i = 0; i < services.length; i++) {
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteService/' + services[i].id + '">' +
+                    			'<img src = "something"> </a> </td> ' +
+                    			'<td> ' + services[i].type + '</td>' + 
+                    			'<td>' + services[i].duration + '</td>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			}
+		})
 
 	})
 </script>
@@ -143,23 +266,22 @@
 
 <div>
   <h2>Manage Account</h2>
-  	<p> This section will be able to display the customers, providers, and services as well as adding/deleting them.</p>
 </div>
 
 <div>
-	<button id="addCustomerButton"> Add Customer </button>
-	<button id="addProviderButton"> Add Provider </button>
-	<button id="addServiceButton"> Add Service </button>
+	<button id="addCustomerButton" style="display:none"> Add Customer </button>
+	<button id="addProviderButton" style="display:none"> Add Provider </button>
+	<button id="addServiceButton" style="display:none"> Add Service </button>
 </div>
 <br>
 
 <div id="addCustomer">
 	<label for=customerFirstName> First Name </label>
-	<input id="customerFirstName" name="customerFirstName"> <br>
+	<input id="customerFirstName" name="customerFirstName"> <br> <br>
 	<label for=customerLastName> Last Name </label>
-	<input id="customerLastName" name="customerLastName"> <br>
-	<label for=email> Email Address </label>
-	<input id="email" name="email"> <br>
+	<input id="customerLastName" name="customerLastName"> <br> <br>
+	<label for=email> Email Address (optional) </label>
+	<input id="email" name="email"> <br> <br>
 	<label for=phoneNumber> Phone Number </label>
 	<input id="phoneNumber" name="phoneNumber">
 	<div id="customerMessage"> </div>
@@ -167,29 +289,29 @@
 
 <div id="addProvider">
 	<label for=providerFirstName> First Name </label>
-	<input id="providerFirstName" name="providerFirstName"> <br>
+	<input id="providerFirstName" name="providerFirstName"> <br> <br>
 	<label for=providerLastName> Last Name </label>
 	<input id="providerLastName" name="providerLastName"> <br>
 </div>
 
 <div id="addService">
 	<label for=type> Service Type </label>
-	<input id="type" name="type"> <br>
-	<label for=duration> Duration </label>
+	<input id="type" name="type"> <br> <br>
+	<label for=duration> Duration (in minutes) </label>
 	<input id="duration" name="duration"> <br>
 </div>
 
-<div>
-	<button id="listCustomers"> List Customers </button>
-	<button id="listProviders"> List Providers </button>
-	<button id="listServices"> List Services </button>
+<div> Show
+	<select id="displaySelection">
+		<option> --Choose One-- </option>
+		<option value="Customers">Customers</option>
+		<option value="Providers">Providers</option>
+		<option value="Services">Services</option>
+	</select>
 </div>
-<br>
 
-<div>
-	<button id="deleteCustomers"> Delete Customers </button>
-	<button id="deleteProviders"> Delete Providers </button>
-	<button id="deleteServices"> Delete Services </button>
+<div id="list">
+
 </div>
 
 {% endblock %}

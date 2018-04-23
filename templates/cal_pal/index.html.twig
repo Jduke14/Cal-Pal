@@ -30,8 +30,31 @@
     };
     eventDialog = $('#addEvent').dialog(eventDialogOptions);
 
-      // page is now ready, initialize the calendar...
+    $('#customer').autocomplete({
+      source: "{{ path('search_customers') }}",
+      select: function (customer, ui) {
+        $('#customerid').val(ui.item.id);
+        $('#customername').val(ui.item.label);
+      }
+    })
 
+    $('#provider').autocomplete({
+      source: "{{ path('search_providers') }}",
+      select: function (customer, ui) {
+        $('#providerid').val(ui.item.id);
+        $('#providername').val(ui.item.label);
+      }
+    })
+
+    $('#service').autocomplete({
+      source: "{{ path('search_services') }}",
+      select: function (customer, ui) {
+        $('#serviceid').val(ui.item.id);
+        $('#servicename').val(ui.item.label);
+        $('#duration').val(ui.item.duration);
+      }
+    })
+      //calendar initialized
       calendar = $('#calendar').fullCalendar({
         // put your options and callbacks here
 
@@ -52,6 +75,8 @@
         },
 
         dayClick: addDialog,
+
+        eventClick:editDialog,
 
         events:
           function(start, end, timezone, callback) {
@@ -76,8 +101,7 @@
     function addDialog(date, allDay, jsEvent, view) {
       $('#eventDate').val(date.format('YYYY-MM-DD'));
       $('#startTime').val(date.format('HH:mm'));
-      $('#endTime').val(date.add(2, 'hours').format('HH:mm'));
-
+      
       eventDialog.dialog('option', 'title', 'New Appointment');
       var buttons = {};
       buttons.Save = saveButtonFn;
@@ -88,8 +112,10 @@
 
     function saveButtonFn() {
       var startDate = $('#eventDate').val();
-      var eventStart = startDate + " " + $('#startTime').val(); + ":00";
-      var eventEnd = startDate + " " + $('#endTime').val() + ":00";
+      var eventStart = startDate + " " + $('#startTime').val() + ":00";
+      var start = moment(eventStart, "YYYY-MM-DD HH:mm");
+      var end = start.add($('#duration').val(), 'minutes');
+      var eventEnd = end.format('YYYY-MM-DD HH:mm')+ ":00";
       var url = '{{path('addEvent') }}';
       $.ajax(url, {
         type: 'POST',
@@ -99,9 +125,9 @@
           eventstart: eventStart,
           eventend: eventEnd,
           companyid: 1,
-          customerid: 1,
-          providerid: 1, 
-          serviceid: 1, 
+          customerid: $('#customerid').val(),
+          providerid: $('#providerid').val(), 
+          serviceid: $('#serviceid').val(), 
           comments: $('#comments').val()
         })
       })
@@ -114,6 +140,31 @@
       eventDialog.dialog('close');
     }
 
+    function editDialog(calEvent, jsEvent, view) {
+      $('#eventDate').val(calEvent.start);
+      $('#eventDate').val(calEvent.start);
+      $('#customer').val(calEvent.title);
+      $('#provider').val(calEvent.provider);
+      $('#service').val(calEvent.service);
+      $('#comments').val(calEvent.comments);
+      $('#customerid').val(calEvent.customerid);
+      $('#providerid').val(calEvent.providerid);
+      $('#serviceid').val(calEvent.serviceid);
+      eventDialog.dialog('option', 'title', 'New Appointment');
+      var buttons = {};
+      buttons.Edit = editButtonFn;
+      buttons.Delete = deleteButtonFn;
+      buttons.Cancel = cancelButtonFn;
+      eventDialog.dialog('option', 'buttons', buttons);
+      eventDialog.dialog('open');
+    }
+    function editButtonFn() {
+      return true;
+    }
+
+    function deleteButtonFn() {
+      return true;
+    }
   })
 
   $(document).ready(function() {
@@ -164,16 +215,25 @@
 
 <div id="addEvent"> 
   <label for=eventDate> Start Date </label>
-  <input id="eventDate" name="eventDate" type="date"> <br>
+  <input id="eventDate" name="eventDate" type="date"> <br> <br>
   <label for=startTime> Start Time </label>
-  <input id="startTime" name="startTime" type="time"> <br>
+  <input id="startTime" name="startTime" type="time"> <br> <br>
+  <label for=customer> Customer </label>
+  <input id="customer" name="customer" size="20"> <br> <br>
   <label for=provider> Provider </label>
-  <input id="provider" name="provider" type="provider"> <br>
+  <input id="provider" name="provider"> <br> <br>
   <label for=service> Service </label>
-  <input id="service" name="service" type="service"> <br>
+  <input id="service" name="service"> <br> <br>
   <label for=comments> Comments (optional) </label>
-  <input id="comments" name="comments" type="comments">
+  <input id="comments" name="comments">
+  <input id="duration" style="display:none">
   <input id="endTime" style="display:none">
+  <input id="customerid" name="customerid" type="hidden">
+  <input id="customername" name="customername" type="hidden">
+  <input id="providerid" name="providerid" type="hidden">
+  <input id="providername" name="providername" type="hidden">
+  <input id="serviceid" name="serviceid" type="hidden">
+  <input id="servicename" name="servicename" type="hidden">
 </div>
 
  <div class="column1">
