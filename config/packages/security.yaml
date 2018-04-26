@@ -7,7 +7,7 @@ security:
                     admin:
                         password: $2y$12$yG8j7zZPSww6dKnsYPVTuOWdyNfbgg2Kke2YUo9kA1KHUrfyx7wDG
                         roles: 'ROLE_ADMIN'
-                    customer:
+                    Josh Duke:
                         password: $2y$12$iflkkYCoWj3VldhCRVIKlOYqRldcw2kMFg4.0/NpoECPLlnAsQPSK
                         roles: 'ROLE_USER'
     encoders:

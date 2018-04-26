@@ -31,6 +31,11 @@ class Company
      */
     private $companyEmail;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $companyAddress;
+
     public function getId()
     {
         return $this->id;
@@ -68,6 +73,18 @@ class Company
     public function setCompanyEmail(string $companyEmail): self
     {
         $this->companyEmail = $companyEmail;
+
+        return $this;
+    }
+
+    public function getCompanyAddress(): ?string
+    {
+        return $this->companyAddress;
+    }
+
+    public function setCompanyAddress(string $companyAddress): self
+    {
+        $this->companyAddress = $companyAddress;
 
         return $this;
     }

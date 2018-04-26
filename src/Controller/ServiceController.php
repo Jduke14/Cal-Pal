@@ -6,6 +6,7 @@ use App\Entity\Service;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ServiceController extends Controller
@@ -63,6 +64,6 @@ class ServiceController extends Controller
         $service = $entityManager->getRepository(Service::class)->find($id);
         $entityManager->remove($service);
         $entityManager->flush();
-        return new Response('Service Deleted: ');
+        return new RedirectResponse('/manage');
     }
 }

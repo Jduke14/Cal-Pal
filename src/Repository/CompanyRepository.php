@@ -22,7 +22,7 @@ class CompanyRepository extends ServiceEntityRepository
     public function getCompanyByCompanyId($id): array {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
-            SELECT id, company_name, company_phone_number, company_email 
+            SELECT id, company_name, company_phone_number, company_email, company_address 
             FROM company
             WHERE id = ?';
             $stmt = $conn->prepare($sql);

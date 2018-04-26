@@ -22,7 +22,7 @@ class EventRepository extends ServiceEntityRepository
     public function findAllEventsByDate(): array {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
-            SELECT e.id, e.start_date, e.end_date, e.comments, e.provider_id, e.service_id, c.first_name, c.last_name, e.customer_id, e.company_id, p.first_name as p_first_name, p.last_name as p_last_name, s.type, s.duration 
+            SELECT e.id, e.start_date, e.end_date, e.comments, e.provider_id, e.service_id, c.first_name, c.last_name, e.customer_id, e.company_id, p.first_name as p_first_name, p.last_name as p_last_name, s.type, s.duration, p.color 
             FROM event e 
             left join customer c 
             on e.customer_id = c.id 
@@ -39,10 +39,12 @@ class EventRepository extends ServiceEntityRepository
     public function getEventById($id): array {
         $conn = $this->getEntityManager()->getConnection();
         $sql = '
-            SELECT e.id, e.start_date, e.end_date, e.comments, e.provider_id, e.service_id, c.first_name, c.last_name, e.customer_id, e.company_id 
+            SELECT e.id, e.start_date, e.end_date, e.comments, e.provider_id, e.service_id, c.first_name, c.last_name, e.customer_id, e.company_id, p.color 
             FROM event e 
             join customer c 
             on e.customer_id = c.id 
+            join provider p
+            on e.provider_id = p.id
             WHERE e.company_id = 1 
             AND e.id = ?';
             $stmt = $conn->prepare($sql);

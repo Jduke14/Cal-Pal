@@ -6,7 +6,9 @@ use App\Entity\Provider;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 
 class ProviderController extends Controller
 {
@@ -22,6 +24,7 @@ class ProviderController extends Controller
     	$provider = new Provider();
     	$provider->setFirstName($newProvider->firstname);
     	$provider->setLastName($newProvider->lastname);
+        $provider->setColor($newProvider->color);
     	$provider->setCompanyID($newProvider->companyid);
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
@@ -96,7 +99,7 @@ class ProviderController extends Controller
         $provider = $entityManager->getRepository(Provider::class)->find($id);
         $entityManager->remove($provider);
         $entityManager->flush();
-        return new Response('Provider Deleted: ');
+        return new RedirectResponse('/manage');
     }
 
 }

@@ -27,14 +27,15 @@
 	            _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
 	        },
 	        success: function(company) {
-	        	var htmlString = '<table> <th> Company Name </th> <th> Phone Number </th> <th> Email Address</th>';
+	        	var htmlString = '<table>';
 	        	var phoneNumber;
 	        	for( var i = 0; i < company.length; i++) {
 	        		phoneNumber = '(' + company[i].company_phone_number.substring(0, 3) + ')' + ' ' + company[i].company_phone_number.substring(3, 6) + ' - ' + company[i].company_phone_number.substring(6, 10);
-	        		htmlString = htmlString + '<tr>' +
-	        			'<td> ' + company[i].company_name + '</td>' + 
-	        			'<td>' + phoneNumber + '</td>' +
-	        			'<td>' + company[i].company_email + '</td> </tr>';
+	        		htmlString = htmlString + '<tr>' + '<td class="tableFont"> Company Name: </td>' +
+	        			'<td class="tableFont"> ' + company[i].company_name + '</td> </tr>' + 
+	        			'<tr> <td class="tableFont"> Phone Number: </td> <td class="tableFont">' + phoneNumber + '</td> </tr>' +
+	        			'<tr> <td class="tableFont"> Email Address: </td> <td class="tableFont">' + company[i].company_email + '</td> </tr>' + 
+	        			'<tr> <td class="tableFont"> Address: </td> <td class="tableFont">' + company[i].company_address + '</td> </tr>';
 	        	}
 	        	htmlString = htmlString + '</table>';
 	        	$('#list').html(htmlString);
@@ -52,8 +53,7 @@
 
 <div>
   <h2>About</h2>
-      <h3>Developers</h3>
-          <p>This section will display the information of the company</p>
+      <h3>Welcome to Sally's Beauty Salon!</h3>
 </div>
 
 <div id="list">

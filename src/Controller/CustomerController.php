@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class CustomerController extends Controller
@@ -65,6 +66,6 @@ class CustomerController extends Controller
         $customer = $entityManager->getRepository(Customer::class)->find($id);
         $entityManager->remove($customer);
         $entityManager->flush();
-        return new Response('Customer Deleted: ');
+        return new RedirectResponse('/manage');
     }
 }

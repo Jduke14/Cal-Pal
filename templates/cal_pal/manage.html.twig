@@ -73,8 +73,6 @@
 		        })
       		})
       		.done(function (response, textStatus, jqXHR) {
-		        //$('#customerMessage').val('Save Successful!');
-		        alert('Save successful!');
 		        customerDialog.dialog('close');
       		})
 		}
@@ -101,6 +99,7 @@
 		        data: JSON.stringify({
 		          firstname: $('#providerFirstName').val(),
 		          lastname: $('#providerLastName').val(),
+		          color: $('#color').val(),
 		          companyid: 1
 		        })
       		})
@@ -189,7 +188,7 @@
                     		phoneNumber = '(' + customers[i].phone_number.substring(0, 3) + ')' + ' ' + customers[i].phone_number.substring(3, 6) + 
                     		' - ' + customers[i].phone_number.substring(6, 10);
                     		htmlString = htmlString + '<tr> <td> <a href = "/deleteCustomer/' + customers[i].id + '">' +
-                    			'<img src = "something"> </a> </td> ' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </img> </a> </td> ' +
                     			'<td> ' + customers[i].first_name + '</td>' + 
                     			'<td>' + customers[i].last_name + '</td>' +
                     			'<td>' + customers[i].email + '</td>' + 
@@ -213,12 +212,10 @@
                         _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
                     },
                     success: function(providers) {
-                    	var htmlString = '<table> <th> </th> <th> </th> <th> First Name </th> <th> Last Name </th>';
+                    	var htmlString = '<table> <th> </th> <th> First Name </th> <th> Last Name </th>';
                     	for( var i = 0; i < providers.length; i++) {
                     		htmlString = htmlString + '<tr> <td> <a href = "/deleteProvider/' + providers[i].id + '">' +
-                    			'<img src = "something"> </a> </td> ' +
-                    			'<td> <a href = "/editProvider/' + providers[i].id + '">' +
-                    			'<img src = "something"> </a> </td>' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </a> </td> ' +
                     			'<td> ' + providers[i].first_name + '</td>' + 
                     			'<td>' + providers[i].last_name + '</td>';
                     	}
@@ -243,7 +240,7 @@
                     	var htmlString = '<table> <th> </th> <th> Type </th> <th> Duration </th>';
                     	for( var i = 0; i < services.length; i++) {
                     		htmlString = htmlString + '<tr> <td> <a href = "/deleteService/' + services[i].id + '">' +
-                    			'<img src = "something"> </a> </td> ' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </a> </td> ' +
                     			'<td> ' + services[i].type + '</td>' + 
                     			'<td>' + services[i].duration + '</td>';
                     	}
@@ -291,7 +288,9 @@
 	<label for=providerFirstName> First Name </label>
 	<input id="providerFirstName" name="providerFirstName"> <br> <br>
 	<label for=providerLastName> Last Name </label>
-	<input id="providerLastName" name="providerLastName"> <br>
+	<input id="providerLastName" name="providerLastName"> <br> <br>
+	<label for=color> Color Code </label>
+	<input id="color" name="color"> <br>
 </div>
 
 <div id="addService">

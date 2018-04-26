@@ -101,7 +101,15 @@
     function addDialog(date, allDay, jsEvent, view) {
       $('#eventDate').val(date.format('YYYY-MM-DD'));
       $('#startTime').val(date.format('HH:mm'));
-      
+      $('#customer').val('');
+      $('#provider').val('');
+      $('#service').val('');
+      $('#comments').val('');
+      $('#eventid').val('');
+      $('#customerid').val('');
+      $('#providerid').val('');
+      $('#serviceid').val('');
+      $('#type').val('new');
       eventDialog.dialog('option', 'title', 'New Appointment');
       var buttons = {};
       buttons.Save = saveButtonFn;
@@ -116,12 +124,14 @@
       var start = moment(eventStart, "YYYY-MM-DD HH:mm");
       var end = start.add($('#duration').val(), 'minutes');
       var eventEnd = end.format('YYYY-MM-DD HH:mm')+ ":00";
-      var url = '{{path('addEvent') }}';
+      var url = '{{path('saveEvent') }}';
       $.ajax(url, {
         type: 'POST',
         timeout: 30*1000,
         dataType: 'json', 
         data: JSON.stringify({
+          type: $('#type').val(),
+          id: $('#eventid').val(),
           eventstart: eventStart,
           eventend: eventEnd,
           companyid: 1,
@@ -141,29 +151,40 @@
     }
 
     function editDialog(calEvent, jsEvent, view) {
-      $('#eventDate').val(calEvent.start);
-      $('#eventDate').val(calEvent.start);
+      $('#eventDate').val(calEvent.start.format("YYYY-MM-DD"));
+      $('#startTime').val(calEvent.start.format("HH:mm"));
       $('#customer').val(calEvent.title);
       $('#provider').val(calEvent.provider);
       $('#service').val(calEvent.service);
       $('#comments').val(calEvent.comments);
+      $('#eventid').val(calEvent.id);
       $('#customerid').val(calEvent.customerid);
       $('#providerid').val(calEvent.providerid);
       $('#serviceid').val(calEvent.serviceid);
+      $('#type').val('edit');
       eventDialog.dialog('option', 'title', 'New Appointment');
       var buttons = {};
-      buttons.Edit = editButtonFn;
+      //buttons.Save = saveButtonFn;
       buttons.Delete = deleteButtonFn;
       buttons.Cancel = cancelButtonFn;
       eventDialog.dialog('option', 'buttons', buttons);
       eventDialog.dialog('open');
     }
-    function editButtonFn() {
-      return true;
-    }
 
     function deleteButtonFn() {
-      return true;
+      var url = '{{path('remove_event') }}';
+      $.ajax(url, {
+        type: 'POST',
+        timeout: 30*1000,
+        dataType: 'json', 
+        data: JSON.stringify({
+          id: $('#eventid').val()
+        })
+      })
+      .done(function (response, textStatus, jqXHR) {
+        calendar.fullCalendar('removeEvents', $('#eventid').val());
+        eventDialog.dialog('close');
+      })
     }
   })
 
@@ -228,6 +249,8 @@
   <input id="comments" name="comments">
   <input id="duration" style="display:none">
   <input id="endTime" style="display:none">
+  <input id="type" name="type" type="hidden">
+  <input id="eventid" name="eventid" type="hidden">
   <input id="customerid" name="customerid" type="hidden">
   <input id="customername" name="customername" type="hidden">
   <input id="providerid" name="providerid" type="hidden">
