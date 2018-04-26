@@ -3,96 +3,141 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class EventController extends Controller
 {
     /**
-     * @Route("/event", name="event")
+     * @Route("/saveEvent", name="saveEvent")
      */
-    public function index()
+    public function saveEvent(Request $request)
     {
+        $newEvent = json_decode($request->getContent());
         $entityManager = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository(Event::class);
 
         $event = new Event();
-        $event->setStartDate(new \DateTime('2018-03-23 12:00:00'));
-        $event->setEndDate(new \DateTime('2018-03-23 14:00:00'));
-        $event->setCustomerID(1);
-        $event->setProviderID(1);
-        $event->setServiceID(1);
-		$event->setCompanyID(1);
-		$event->setComments('It was great!');
-
+        $event->setStartDate(new \DateTime($newEvent->eventstart));
+        $event->setEndDate(new \DateTime($newEvent->eventend));
+        $event->setCustomerID($newEvent->customerid);
+        $event->setProviderID($newEvent->providerid);
+        $event->setServiceID($newEvent->serviceid);
+        $event->setCompanyID($newEvent->companyid);
+        $event->setComments($newEvent->comments);
+    
+        
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $entityManager->persist($event);
 
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
+        
+        $latestEvent = $repository->getEventById($event->getId());
+        $e = new \stdClass();
+        $e->id = $event->getId();
+        $e->title = $latestEvent['first_name'] . ' ' . $latestEvent['last_name'];
+        $e->start = $latestEvent['start_date'];
+        $e->end = $latestEvent['end_date'];
+        $e->color = '#'.$latestEvent['color'];
+        $e->comments = $latestEvent['comments'];
 
-        return new Response('Saved new product with id '.$event->getId());
+        $r = new \stdClass();
+        $r->status = 'success';
+        $r->data = $e;
+        return new Response(json_encode($r), 200, array('Content-Type'=>'application/json'));
+    }
+    public function convertArrayToEvent($tempEvent): ?Event {
+        $event = new Event();
+        $event->id = $tempEvent['id'];
+        $event->setStartDate(new \DateTime($tempEvent['start_date']));
+        $event->setEndDate(new \DateTime($tempEvent['end_date']));
+        $event->setCustomerID($tempEvent['customer_id']);
+        $event->setProviderID($tempEvent['provider_id']);
+        $event->setServiceID($tempEvent['service_id']);
+        $event->setCompanyID($tempEvent['company_id']);
+        $event->setComments($tempEvent['comments']);
+        return $event;
+    }
+    /**
+     * @Route("/displayevent/{id}", name="event_display")
+     */
+    public function showAction($id) {
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->find($id);
 
-        /*return $this->render('event/index.html.twig', [
-            'controller_name' => 'EventController',
-        ]);*/
+        if(!$event) {
+            throw $this->createNotFoundException(
+                'No provider found for this id '.$id
+            );
+        }
 
+        $e = new \stdClass();
+        $e->id = $event->getId();
+        $e->title = 'New event';
+        $e->start = $event->getStartDate();
+        $e->end = $event->getEndDate();
+        $e->comments = $event->getComments();
+
+        $r = new \stdClass();
+        $r->status = 'success';
+        $r->data = $e;
+        return new Response(json_encode($r), 200, array('Content-Type'=>'application/json'));
     }
 
     /**
      * @Route("/getCalendarEvents", name="calendarEvents")
      */
-    public function getCalendarEvents(Request $request) { 
+    public function getCalendarEvents(Request $request, AuthorizationCheckerInterface $authChecker) { 
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $userRole = false;
+        if (true === $authChecker->isGranted('ROLE_USER')) {
+            $userRole = true;
+        }
+        $repository = $this->getDoctrine()->getRepository(Event::class);
+        $events = $repository->findAllEventsByDate();
+        $calEvents = array();
+        foreach($events as $tempE) {
+            $e = new \stdClass(); 
+            $e->id = $tempE['id'];
+            if($userRole && $tempE['customer_id'] != 1) {
+                $e->title = 'Time booked';
+            } else {
+                $e->title = $tempE['first_name'] . ' ' . $tempE['last_name'];
+            }
+            $e->start = $tempE['start_date'];
+            $e->end = $tempE['end_date'];
+            $e->provider = $tempE['p_first_name'] . ' '. $tempE['p_last_name'];
+            $e->service = $tempE['type'];
+            $e->comments = $tempE['comments'];
+            $e->customerid = $tempE['customer_id'];
+            $e->providerid = $tempE['provider_id'];
+            $e->serviceid = $tempE['service_id'];
+            $e->color = '#'.$tempE['color'];
+            $calEvents[] = $e;
+        }
 
-    //$logger = $this->get('logger');
-    $events = array();
-    $e = new \stdClass(); 
-    $e->title = 'Event 1';
-    $e->start = '2018-03-25 12:00:00';
-    $events[] = $e;
-
-    $e = new \stdClass(); 
-    $e->title = 'Event 2';
-    $e->start = '2018-02-15 12:00:00';
-    $events[] = $e;
-
-    return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); 
-
-    /*$model = $this->get('lds_call_sheet.model'); 
-
-        $starttimestamp = $request->query->get('start'); 
-        $startdate = new \DateTime("@$starttimestamp"); 
-        $startdate->setTimezone(new \DateTimeZone(date_default_timezone_get())); 
-        $logger->debug(__METHOD__ . ':  startdate = ' . $startdate->format('Y-m-d H:i:s')); 
-        
-        $endtimestamp = $request->query->get('end'); 
-        $enddate = new \DateTime("@$endtimestamp"); 
-        $enddate->setTimezone(new \DateTimeZone(date_default_timezone_get())); 
-        $logger->debug(__METHOD__ . ':  enddate = ' . $enddate->format('Y-m-d H:i:s')); 
-        
-    
-        $securitycontext = $this->get('security.context'); 
-        if ($securitycontext->isGranted('ROLE_VIEWALLDEALERCALLS')) { 
-                $repid = $request->query->has('repid') ? $request->query->get('repid') : 'all'; 
-                $logger->debug(__METHOD__ . ': retrieving dealer calls for repid ' . $repid); 
-                $calls = $repid == 'all' ? 
-                        $model->get_dealer_calls($startdate, $enddate) : 
-                        $model->get_dealer_calls($startdate, $enddate, $repid); 
-        } 
-        else { 
-                $repid = $securitycontext->getToken()->getUser()->getId(); 
-                $logger->debug(__METHOD__ . ': retrieving dealer calls for repid ' . $repid); 
-                $calls = $model->get_dealer_calls($startdate, $enddate, $repid); 
-        }                         
-    
-    $events = array(); 
-    foreach($calls as $c) { 
-                $logger->debug(__METHOD__ . ': $call (before calendarEventFromDealerCall) = '.print_r($c, true));             
-        $events[] = $this->calendarEventFromDealerCall($c); 
-    } 
-    $hello='hello'; 
-    return new Response(json_encode($events), 200, array('Content-Type' => 'application/json')); */
+        return new Response(json_encode($calEvents), 200, array('Content-Type' => 'application/json')); 
 	}
+
+    /**
+     * @Route("/deleteEvent", name="remove_event")
+     */
+    public function deleteEvent(Request $request) {
+        $tempEvent = json_decode($request->getContent());
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $event = $entityManager->getRepository(Event::class)->find($tempEvent->id);
+        $entityManager->remove($event);
+        $entityManager->flush();
+        $r = new \stdClass();
+        $r->status = 'success';
+        return new Response(json_encode($r), 200, array('Content-Type'=>'application/json'));
+    }
 
 }

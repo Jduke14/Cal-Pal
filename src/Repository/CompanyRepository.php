@@ -19,6 +19,18 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
+    public function getCompanyByCompanyId($id): array {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT id, company_name, company_phone_number, company_email, company_address 
+            FROM company
+            WHERE id = ?';
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(1, $id);
+            $stmt->execute();
+            return $stmt->fetchAll();
+    }
+
 //    /**
 //     * @return Company[] Returns an array of Company objects
 //     */

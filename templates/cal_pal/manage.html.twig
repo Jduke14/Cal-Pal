@@ -1,0 +1,316 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Account{% endblock %}
+
+{% block headblock %}
+<script 
+	src="https://code.jquery.com/jquery-2.2.4.min.js"
+	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	crossorigin="anonymous">
+</script>
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+<script src="{{ asset('js/moment.js') }}"></script>
+<link href="https://code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
+
+
+<script>
+  	$(document).ready(function() {
+		var customerDialog, providerDialog, serviceDialog;
+		var providerDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		var customerDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		var serviceDialogOptions = {
+			autoOpen: false,
+			height: 450,
+			width: 450,
+			modal: true
+		};
+		customerDialog = $('#addCustomer').dialog(customerDialogOptions);
+		$('#addCustomerButton').click(addCustomerDialog);
+
+		providerDialog = $('#addProvider').dialog(providerDialogOptions);
+		$('#addProviderButton').click(addProviderDialog);
+
+		serviceDialog = $('#addService').dialog(serviceDialogOptions);
+		$('#addServiceButton').click(addServiceDialog);
+
+		function addCustomerDialog() {
+			customerDialog.dialog('option', 'title', 'New Customer');
+			var buttons = {};
+			buttons.Save = saveCustomerButtonFn;
+			buttons.Cancel = cancelCustomerButtonFn;
+			customerDialog.dialog('option', 'buttons', buttons);
+			customerDialog.dialog('open');
+		}
+
+		function saveCustomerButtonFn() {
+			var url = '{{path('addCustomer') }}';
+			var phoneNumber = $('#phoneNumber').val();
+			//Correctly formats the phone number and sets it as an integer
+			phoneNumber = phoneNumber.substring(1,4) + phoneNumber.substring(6,9) + phoneNumber.substring(12,16);
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          firstname: $('#customerFirstName').val(),
+		          lastname: $('#customerLastName').val(),
+		          email: $('#email').val(),
+		          phonenumber: phoneNumber,
+		          companyid: 1
+		        })
+      		})
+      		.done(function (response, textStatus, jqXHR) {
+		        customerDialog.dialog('close');
+      		})
+		}
+
+		function cancelCustomerButtonFn() {
+			customerDialog.dialog('close');
+		}
+
+		function addProviderDialog() {
+			providerDialog.dialog('option', 'title', 'New Provider');
+			var buttons = {};
+			buttons.Save = saveProviderButtonFn;
+			buttons.Cancel = cancelProviderButtonFn;
+			providerDialog.dialog('option', 'buttons', buttons);
+			providerDialog.dialog('open');
+		}
+
+		function saveProviderButtonFn() {
+			var url = '{{path('addProvider') }}';
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          firstname: $('#providerFirstName').val(),
+		          lastname: $('#providerLastName').val(),
+		          color: $('#color').val(),
+		          companyid: 1
+		        })
+      		})
+      		.done(function (response, textStatus, jqXHR) {
+		        providerDialog.dialog('close');
+      		})
+		}
+		
+		function cancelProviderButtonFn() {
+			providerDialog.dialog('close');
+		}
+
+		function addServiceDialog() {
+			serviceDialog.dialog('option', 'title', 'New Service');
+			var buttons = {};
+			buttons.Save = saveServiceButtonFn;
+			buttons.Cancel = cancelServiceButtonFn;
+			serviceDialog.dialog('option', 'buttons', buttons);
+			serviceDialog.dialog('open');
+		}
+
+		function saveServiceButtonFn() {
+			var url = '{{path('addService') }}';
+			$.ajax(url, {
+		        type: 'POST',
+		        timeout: 30*1000,
+		        dataType: 'json', 
+		        data: JSON.stringify({
+		          type: $('#type').val(),
+		          duration: $('#duration').val(),
+		          companyid: 1
+		        })
+      		})
+      		.done(function (response, textStatus, jqXHR) {
+		        serviceDialog.dialog('close');
+      		})
+		}
+
+		function cancelServiceButtonFn() {
+			serviceDialog.dialog('close');
+		}
+
+		document.getElementById('phoneNumber').addEventListener('keyup',function(evt){
+	        var phoneNumber = document.getElementById('phoneNumber');
+	        var charCode = (evt.which) ? evt.which : evt.keyCode;
+	        phoneNumber.value = phoneFormat(phoneNumber.value);
+		});
+
+		function phoneFormat(input) {
+			//Strip all characters excluding digits
+			input = input.replace(/\D/g, '');
+			//Trim remaining input to 10 chars, to preserve phone number format
+			input = input.substring(0,10);
+			//Formats the phone number correctly as you type, does not allow more than 10 numbers
+			var size = input.length;
+			if(size == 0) {
+				input = input;
+			} else if (size < 4) {
+				input = '(' + input;
+			} else if (size < 7) {
+				input = '(' + input.substring(0,3) + ') ' + input.substring(3,6);
+			} else {
+				input = '(' + input.substring(0,3) + ') ' + input.substring(3,6) + ' - ' + input.substring(6,10);
+			}
+			return input;
+		}
+
+		$('#displaySelection').change(function() {
+			if($('#displaySelection').val() == "Customers") {
+				$('#addCustomerButton').show();
+				$('#addProviderButton').hide();
+				$('#addServiceButton').hide();
+				var url = '{{ path('get_customers') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(customers) {
+                    	var htmlString = '<table> <th> </th> <th> First Name </th> <th> Last Name </th> <th> Email </th> <th> Phone Number </th>';
+                    	var phoneNumber;
+                    	for( var i = 0; i < customers.length; i++) {
+                    		phoneNumber = '(' + customers[i].phone_number.substring(0, 3) + ')' + ' ' + customers[i].phone_number.substring(3, 6) + 
+                    		' - ' + customers[i].phone_number.substring(6, 10);
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteCustomer/' + customers[i].id + '">' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </img> </a> </td> ' +
+                    			'<td> ' + customers[i].first_name + '</td>' + 
+                    			'<td>' + customers[i].last_name + '</td>' +
+                    			'<td>' + customers[i].email + '</td>' + 
+                    			'<td>' + phoneNumber + '</td> </tr>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			} else if ($('#displaySelection').val() == "Providers") {
+				$('#addCustomerButton').hide();
+				$('#addProviderButton').show();
+				$('#addServiceButton').hide();
+				var url = '{{ path('get_providers') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(providers) {
+                    	var htmlString = '<table> <th> </th> <th> First Name </th> <th> Last Name </th>';
+                    	for( var i = 0; i < providers.length; i++) {
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteProvider/' + providers[i].id + '">' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </a> </td> ' +
+                    			'<td> ' + providers[i].first_name + '</td>' + 
+                    			'<td>' + providers[i].last_name + '</td>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			} else if ($('#displaySelection').val() == "Services") {
+				$('#addCustomerButton').hide();
+				$('#addProviderButton').hide();
+				$('#addServiceButton').show();
+				var url = '{{ path('get_services') }}';
+                $.ajax(url, {
+                    type: 'GET',
+                    timeout: 30*1000,
+                    dataType: 'json',
+                    data: {
+                        companyid: '1',
+                        _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+                    },
+                    success: function(services) {
+                    	var htmlString = '<table> <th> </th> <th> Type </th> <th> Duration </th>';
+                    	for( var i = 0; i < services.length; i++) {
+                    		htmlString = htmlString + '<tr> <td> <a href = "/deleteService/' + services[i].id + '">' +
+                    			'<img src = "{{ asset('images/delete.png') }}" height="16" width="16"> </a> </td> ' +
+                    			'<td> ' + services[i].type + '</td>' + 
+                    			'<td>' + services[i].duration + '</td>';
+                    	}
+                    	htmlString = htmlString + '</table>';
+                    	$('#list').html(htmlString);
+                    }
+                })
+			}
+		})
+
+	})
+</script>
+{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div>
+  <h2>Manage Account</h2>
+</div>
+
+<div>
+	<button id="addCustomerButton" style="display:none"> Add Customer </button>
+	<button id="addProviderButton" style="display:none"> Add Provider </button>
+	<button id="addServiceButton" style="display:none"> Add Service </button>
+</div>
+<br>
+
+<div id="addCustomer">
+	<label for=customerFirstName> First Name </label>
+	<input id="customerFirstName" name="customerFirstName"> <br> <br>
+	<label for=customerLastName> Last Name </label>
+	<input id="customerLastName" name="customerLastName"> <br> <br>
+	<label for=email> Email Address (optional) </label>
+	<input id="email" name="email"> <br> <br>
+	<label for=phoneNumber> Phone Number </label>
+	<input id="phoneNumber" name="phoneNumber">
+	<div id="customerMessage"> </div>
+</div>
+
+<div id="addProvider">
+	<label for=providerFirstName> First Name </label>
+	<input id="providerFirstName" name="providerFirstName"> <br> <br>
+	<label for=providerLastName> Last Name </label>
+	<input id="providerLastName" name="providerLastName"> <br> <br>
+	<label for=color> Color Code </label>
+	<input id="color" name="color"> <br>
+</div>
+
+<div id="addService">
+	<label for=type> Service Type </label>
+	<input id="type" name="type"> <br> <br>
+	<label for=duration> Duration (in minutes) </label>
+	<input id="duration" name="duration"> <br>
+</div>
+
+<div> Show
+	<select id="displaySelection">
+		<option> --Choose One-- </option>
+		<option value="Customers">Customers</option>
+		<option value="Providers">Providers</option>
+		<option value="Services">Services</option>
+	</select>
+</div>
+
+<div id="list">
+
+</div>
+
+{% endblock %}

@@ -2,7 +2,48 @@
 
 {% block title %}About{% endblock %}
 
-{% block headblock %} {% endblock %}
+{% block headblock %} 
+<script 
+	src="https://code.jquery.com/jquery-2.2.4.min.js"
+	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	crossorigin="anonymous">
+</script>
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+<script src="{{ asset('js/moment.js') }}"></script>
+<link href="https://code.jquery.com/ui/jquery-ui-git.css" rel="stylesheet">
+
+<script>
+  	$(document).ready(function() {
+		var url = '{{ path('get_company') }}';
+	    $.ajax(url, {
+	        type: 'GET',
+	        timeout: 30*1000,
+	        dataType: 'json',
+	        data: {
+	            companyid: '1',
+	            _: Math.round(new Date().getTime() / 1000) // prevents browswer caching
+	        },
+	        success: function(company) {
+	        	var htmlString = '<table>';
+	        	var phoneNumber;
+	        	for( var i = 0; i < company.length; i++) {
+	        		phoneNumber = '(' + company[i].company_phone_number.substring(0, 3) + ')' + ' ' + company[i].company_phone_number.substring(3, 6) + ' - ' + company[i].company_phone_number.substring(6, 10);
+	        		htmlString = htmlString + '<tr>' + '<td class="tableFont"> Company Name: </td>' +
+	        			'<td class="tableFont"> ' + company[i].company_name + '</td> </tr>' + 
+	        			'<tr> <td class="tableFont"> Phone Number: </td> <td class="tableFont">' + phoneNumber + '</td> </tr>' +
+	        			'<tr> <td class="tableFont"> Email Address: </td> <td class="tableFont">' + company[i].company_email + '</td> </tr>' + 
+	        			'<tr> <td class="tableFont"> Address: </td> <td class="tableFont">' + company[i].company_address + '</td> </tr>';
+	        	}
+	        	htmlString = htmlString + '</table>';
+	        	$('#list').html(htmlString);
+	        }
+	    })
+  	})
+</script>
+{% endblock %}
 
 {% block body %}
 <style>
@@ -10,9 +51,12 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="column2">
-  <h2>About Cal-Pal</h2>
-      <h3>Developers</h3>
-          <p>Cal-Pal started as a project for a computer science class at Louisiana State University. The goal was to create something longer and more complex than the students had attempted before. Classmates Devin Tullier, Josh Duke, Mark Thibodeaux, Chris Walker, and Eric Tran came up with Cal-Pal. </p>
+<div>
+  <h2>About</h2>
+      <h3>Welcome to Sally's Beauty Salon!</h3>
+</div>
+
+<div id="list">
+
 </div>
 {% endblock %}

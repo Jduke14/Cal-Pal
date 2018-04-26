@@ -22,7 +22,7 @@ class Company
     private $companyName;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=12)
      */
     private $companyPhoneNumber;
 
@@ -30,6 +30,11 @@ class Company
      * @ORM\Column(type="string", length=255)
      */
     private $companyEmail;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    private $companyAddress;
 
     public function getId()
     {
@@ -48,12 +53,12 @@ class Company
         return $this;
     }
 
-    public function getCompanyPhoneNumber(): ?int
+    public function getCompanyPhoneNumber(): ?string
     {
         return $this->companyPhoneNumber;
     }
 
-    public function setCompanyPhoneNumber(int $companyPhoneNumber): self
+    public function setCompanyPhoneNumber(string $companyPhoneNumber): self
     {
         $this->companyPhoneNumber = $companyPhoneNumber;
 
@@ -68,6 +73,18 @@ class Company
     public function setCompanyEmail(string $companyEmail): self
     {
         $this->companyEmail = $companyEmail;
+
+        return $this;
+    }
+
+    public function getCompanyAddress(): ?string
+    {
+        return $this->companyAddress;
+    }
+
+    public function setCompanyAddress(string $companyAddress): self
+    {
+        $this->companyAddress = $companyAddress;
 
         return $this;
     }

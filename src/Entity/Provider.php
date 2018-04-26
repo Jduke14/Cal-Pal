@@ -31,6 +31,11 @@ class Provider
      */
     private $companyID;
 
+    /**
+     * @ORM\Column(type="string", length=6)
+     */
+    private $color;
+
     public function getId()
     {
         return $this->id;
@@ -68,6 +73,18 @@ class Provider
     public function setCompanyID(int $companyID): self
     {
         $this->companyID = $companyID;
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        $this->color = $color;
 
         return $this;
     }
